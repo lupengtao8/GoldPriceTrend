@@ -1,0 +1,61 @@
+<view class="container">
+
+  <view class="header">
+    <view class="title">金价行情</view>
+    <view class="subtitle" wx:if="{{updatedAt}}">更新于 {{updatedAt}}</view>
+  </view>
+
+  <view class="cards">
+    <view class="card">
+      <view class="card-head">
+        <text class="card-name">Au99.99</text>
+        <view class="refresh-btn {{refreshing ? 'spinning' : ''}}" bindtap="onRefresh">
+          <text class="refresh-icon">⟳</text>
+        </view>
+      </view>
+      <view class="card-body">
+        <text class="price">{{sgePriceText}}</text>
+        <text class="unit">元/克</text>
+      </view>
+      <view class="card-foot {{sgeChangeClass}}">
+        <text wx:if="{{sgeChangeText}}">{{sgeChangeText}}</text>
+        <text wx:else class="flat">暂无涨跌数据</text>
+      </view>
+    </view>
+
+    <view class="card">
+      <view class="card-head">
+        <text class="card-name">伦敦金 XAU</text>
+        <view class="refresh-btn {{refreshing ? 'spinning' : ''}}" bindtap="onRefresh">
+          <text class="refresh-icon">⟳</text>
+        </view>
+      </view>
+      <view class="card-body">
+        <text class="price">{{lbmaUsdText}}</text>
+        <text class="unit">美元/盎司</text>
+      </view>
+      <view class="card-foot {{lbmaChangeClass}}">
+        <text wx:if="{{lbmaChangeText}}">{{lbmaChangeText}}</text>
+        <text wx:else class="flat">--</text>
+        <text class="sub">折合 {{lbmaCnyText}} 元/克</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="tabs">
+    <view
+      wx:for="{{ranges}}"
+      wx:key="key"
+      class="tab {{activeRange === item.key ? 'tab-active' : ''}}"
+      data-key="{{item.key}}"
+      bindtap="onRangeChange"
+    >{{item.label}}</view>
+  </view>
+
+  <view class="chart-wrap">
+    <ec-canvas id="chart" canvas-id="chart-canvas" ec="{{ ec }}"></ec-canvas>
+    <view class="chart-empty" wx:if="{{chartEmpty}}">暂无历史数据，正在加载...</view>
+  </view>
+
+  <view class="footer-tip">数据每日 15:30 自动更新，手动刷新为实时报价，仅供参考。</view>
+</view>

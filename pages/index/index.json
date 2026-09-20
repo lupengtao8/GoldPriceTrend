@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "金价走势",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark",
+  "backgroundColor": "#f5f6f8",
+  "usingComponents": {
+    "ec-canvas": "../../components/ec-canvas/ec-canvas"
+  }
+}

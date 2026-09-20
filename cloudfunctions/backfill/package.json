@@ -1,0 +1,10 @@
+{
+  "name": "backfill",
+  "version": "1.0.0",
+  "description": "回填历史金价数据",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3",
+    "axios": "^1.6.0"
+  }
+}

@@ -1,0 +1,43 @@
+<view class="container">
+  <view class="hero">
+    <view class="hero-title">关于金价走势</view>
+    <view class="hero-sub">一个只关注每日金价的极简小程序</view>
+  </view>
+
+  <view class="section">
+    <view class="section-title">数据来源</view>
+    <view class="section-body">
+      <view class="row"><text class="label">国内金价</text><text class="value">上海黄金交易所 Au99.99 现货</text></view>
+      <view class="row"><text class="label">历史日线</text><text class="value">LBMA（伦敦金银市场协会）</text></view>
+      <view class="row"><text class="label">实时报价</text><text class="value">新浪财经、gold-api.com</text></view>
+      <view class="row"><text class="label">人民币汇率</text><text class="value">exchangerate-api.com</text></view>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="section-title">更新机制</view>
+    <view class="section-body">
+      <view class="line">· 每日北京时间 15:30 由云函数自动采集并写入历史库。</view>
+      <view class="line">· 手动"刷新"按钮和下拉刷新调用实时报价接口，仅用于展示，不写入历史。</view>
+      <view class="line">· 实时接口做 10 秒服务端缓存，避免频繁请求上游。</view>
+      <view class="line">· 历史数据首次进入时静默回填近 30 天。</view>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="section-title">免责声明</view>
+    <view class="section-body">
+      <view class="line">本小程序所展示的所有行情、报价、统计数据均来自公开第三方接口，仅供信息参考，不构成任何投资建议。作者不对数据的准确性、时效性、完整性作出保证，亦不对因使用本小程序而产生的任何损失承担责任。</view>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="section-title">开发者联系方式</view>
+    <view class="section-body">
+      <view class="line">邮箱：1114172997@qq.com</view>
+      <view class="line">反馈：欢迎在小程序"意见反馈"入口提交问题。</view>
+    </view>
+  </view>
+
+  <view class="privacy">本小程序不收集、不上传任何用户数据。</view>
+</view>

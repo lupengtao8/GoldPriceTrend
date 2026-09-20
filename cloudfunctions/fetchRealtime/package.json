@@ -1,0 +1,10 @@
+{
+  "name": "fetchRealtime",
+  "version": "1.0.0",
+  "description": "手动刷新实时金价（只读，不写库）",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3",
+    "axios": "^1.6.0"
+  }
+}
