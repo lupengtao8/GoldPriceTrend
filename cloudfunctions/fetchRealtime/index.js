@@ -8,10 +8,6 @@ const SINA_URL = 'https://hq.sinajs.cn/list=gds_AUTD';
 const LBMA_URL = 'https://api.gold-api.com/price/XAU';
 const FX_URL = 'https://api.exchangerate-api.com/v4/latest/USD';
 const OZ_TO_G = 31.1034768;
-const CACHE_TTL = 10 * 1000;
-
-// 云函数实例复用 global 做内存级缓存
-const g = global;
 
 async function getSge() {
   const res = await axios.get(SINA_URL, {
@@ -46,12 +42,10 @@ async function getUsdCny() {
   return Number(data.rates.CNY);
 }
 
+// 每次调用都实时拉取上游报价，保证"每次点击刷新=当前最新价"。
+// 防重复点击由前端 refreshing 标志承担（in-flight 期间的点击被忽略），
+// 不在服务端返回过期缓存。
 exports.main = async () => {
-  const now = Date.now();
-  if (g.__rt_cache && now - g.__rt_cache.ts < CACHE_TTL) {
-    return Object.assign({}, g.__rt_cache.data, { cached: true });
-  }
-
   const [sge, lbma_usd, usdcny] = await Promise.all([
     getSge().catch(() => null),
     getLbma().catch(() => null),
@@ -93,6 +87,5 @@ exports.main = async () => {
     timestamp: new Date().toISOString()
   };
 
-  g.__rt_cache = { ts: now, data };
   return data;
 };

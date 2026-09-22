@@ -1,9 +1,0 @@
-{
-  "triggers": [
-    {
-      "name": "dailyGoldFetch",
-      "type": "timer",
-      "config": "0 35 15 * * * *"
-    }
-  ]
-}

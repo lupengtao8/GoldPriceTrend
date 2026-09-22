@@ -47,7 +47,7 @@
   },
   "compileType": "miniprogram",
   "libVersion": "3.17.3",
-  "appid": "wx6adbb57f2125fa3e",
+  "appid": "wxc4a2efa378698c28",
   "projectname": "GoldPriceTrend",
   "miniprogramRoot": "./",
   "cloudfunctionRoot": "cloudfunctions/",

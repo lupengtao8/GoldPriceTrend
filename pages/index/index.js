@@ -42,6 +42,8 @@ Page({
     sgeChangeClass: 'flat',
     lbmaChangeClass: 'flat',
     chartEmpty: true,
+    showCny: true,
+    showUsd: true,
     ec: { lazyLoad: true }
   },
 
@@ -103,6 +105,24 @@ Page({
     this.loadChart();
   },
 
+  // 曲线显隐开关：ec-canvas 简化版无触摸事件，echarts 图例点不了，故用原生 chips 承担
+  onToggleSeries(e) {
+    const key = e.currentTarget.dataset.key;
+    const next = !this.data[key];
+    const other = key === 'showCny' ? this.data.showUsd : this.data.showCny;
+    if (!next && !other) {
+      wx.showToast({ title: '至少保留一条曲线', icon: 'none' });
+      return;
+    }
+    const patch = {};
+    patch[key] = next;
+    this.setData(patch);
+    if (this.chart && this._lastChartData) {
+      const { dates, cny, usd } = this._lastChartData;
+      this.chart.setOption(this.buildOption(dates, cny, usd), true);
+    }
+  },
+
   async loadChart() {
     const range = RANGES.find(r => r.key === this.data.activeRange) || RANGES[1];
     const db = wx.cloud.database();
@@ -138,11 +158,19 @@ Page({
     const dates = all.map(x => x.date);
     const cny = all.map(x => (x.lbma_cny != null ? x.lbma_cny : null));
     const usd = all.map(x => (x.lbma_usd != null ? x.lbma_usd : null));
+    this._lastChartData = { dates, cny, usd };
 
     if (!this.chart) {
-      this.ecComponent.init(chart => {
+      // ec-canvas 约定：回调收到 (canvas, width, height, dpr)，需自行 echarts.init 并 return 实例
+      this.ecComponent.init((canvas, width, height, dpr) => {
+        const chart = echarts.init(canvas, null, {
+          width,
+          height,
+          devicePixelRatio: dpr
+        });
         this.chart = chart;
         chart.setOption(this.buildOption(dates, cny, usd));
+        return chart;
       });
     } else {
       this.chart.setOption(this.buildOption(dates, cny, usd), true);
@@ -150,57 +178,64 @@ Page({
   },
 
   buildOption(dates, cny, usd) {
+    const showCny = this.data.showCny;
+    const showUsd = this.data.showUsd;
+    const yAxis = [];
+    const series = [];
+    if (showCny) {
+      yAxis.push({
+        type: 'value',
+        name: 'CNY/g',
+        nameTextStyle: { fontSize: 10 },
+        scale: true,
+        axisLabel: { fontSize: 10 },
+        splitLine: { lineStyle: { color: '#eee' } }
+      });
+      series.push({
+        name: 'CNY/克',
+        type: 'line',
+        smooth: true,
+        showSymbol: false,
+        yAxisIndex: yAxis.length - 1,
+        data: cny,
+        lineStyle: { color: '#c9a35c', width: 2 },
+        itemStyle: { color: '#c9a35c' }
+      });
+    }
+    if (showUsd) {
+      yAxis.push({
+        type: 'value',
+        name: 'USD/oz',
+        nameTextStyle: { fontSize: 10 },
+        scale: true,
+        axisLabel: { fontSize: 10 },
+        splitLine: showCny ? { show: false } : { lineStyle: { color: '#eee' } }
+      });
+      series.push({
+        name: 'USD/盎司',
+        type: 'line',
+        smooth: true,
+        showSymbol: false,
+        yAxisIndex: yAxis.length - 1,
+        data: usd,
+        lineStyle: { color: '#5b8ff9', width: 2 },
+        itemStyle: { color: '#5b8ff9' }
+      });
+    }
     return {
       animation: false,
       tooltip: { trigger: 'axis' },
-      legend: { data: ['CNY/克', 'USD/盎司'], top: 4, textStyle: { fontSize: 11 } },
-      grid: { left: 48, right: 56, top: 40, bottom: 40 },
+      // 图例由上方原生 chips 承担（简化版 ec-canvas 无触摸，echarts 图例不可点）
+      legend: { show: false },
+      grid: { left: 48, right: showCny && showUsd ? 56 : 48, top: 28, bottom: 40 },
       xAxis: {
         type: 'category',
         data: dates,
         boundaryGap: false,
         axisLabel: { fontSize: 10, formatter: v => v.slice(5) }
       },
-      yAxis: [
-        {
-          type: 'value',
-          name: 'CNY/g',
-          nameTextStyle: { fontSize: 10 },
-          scale: true,
-          axisLabel: { fontSize: 10 },
-          splitLine: { lineStyle: { color: '#eee' } }
-        },
-        {
-          type: 'value',
-          name: 'USD/oz',
-          nameTextStyle: { fontSize: 10 },
-          scale: true,
-          axisLabel: { fontSize: 10 },
-          splitLine: { show: false }
-        }
-      ],
-      series: [
-        {
-          name: 'CNY/克',
-          type: 'line',
-          smooth: true,
-          showSymbol: false,
-          yAxisIndex: 0,
-          data: cny,
-          lineStyle: { color: '#c9a35c', width: 2 },
-          itemStyle: { color: '#c9a35c' }
-        },
-        {
-          name: 'USD/盎司',
-          type: 'line',
-          smooth: true,
-          showSymbol: false,
-          yAxisIndex: 1,
-          data: usd,
-          lineStyle: { color: '#5b8ff9', width: 2 },
-          itemStyle: { color: '#5b8ff9' }
-        }
-      ]
+      yAxis,
+      series
     };
   },
 

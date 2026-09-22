@@ -52,6 +52,11 @@
     >{{item.label}}</view>
   </view>
 
+  <view class="series-toggle">
+    <view class="chip {{showCny ? 'on-cny' : 'off'}}" data-key="showCny" bindtap="onToggleSeries">CNY/克</view>
+    <view class="chip {{showUsd ? 'on-usd' : 'off'}}" data-key="showUsd" bindtap="onToggleSeries">USD/盎司</view>
+  </view>
+
   <view class="chart-wrap">
     <ec-canvas id="chart" canvas-id="chart-canvas" ec="{{ ec }}"></ec-canvas>
     <view class="chart-empty" wx:if="{{chartEmpty}}">暂无历史数据，正在加载...</view>
